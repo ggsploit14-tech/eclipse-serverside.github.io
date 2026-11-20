@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GUDOS - 2 | Executor Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        darkBg: '#0A0A0C',
+                        darkCard: '#12131A',
+                        neonPurple: '#8A2BE2',
+                        neonOrange: '#FF6600',
+                        neonCyan: '#00D2FF',
+                        neonGreen: '#00FF66',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0A0A0C;
+            color: #E2E8F0;
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .cyber-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(138, 43, 226, 0.07) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(138, 43, 226, 0.07) 1px, transparent 1px);
+        }
+
+        .glow-orb-purple {
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.35) 0%, rgba(0,0,0,0) 70%);
+            filter: blur(60px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .glow-orb-orange {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 102, 0, 0.25) 0%, rgba(0,0,0,0) 70%);
+            filter: blur(60px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glass-card {
+            background: rgba(18, 19, 26, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glow-btn-orange {
+            box-shadow: 0 0 15px rgba(255, 102, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+        .glow-btn-orange:hover {
+            box-shadow: 0 0 25px rgba(255, 102, 0, 0.75);
+            transform: translateY(-2px);
+        }
+
+        .glow-btn-purple {
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.4);
+            transition: all 0.3s ease;
+        }
+        .glow-btn-purple:hover {
+            box-shadow: 0 0 25px rgba(138, 43, 226, 0.75);
+            transform: translateY(-2px);
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .status-pulse {
+            animation: pulse-green 2s infinite;
+        }
+
+        .terminal-box {
+            background-color: #070709;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .view-hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen cyber-grid flex flex-col justify-between">
+
+    <div class="glow-orb-purple top-10 left-1/4"></div>
+    <div class="glow-orb-orange top-1/3 right-10"></div>
+    <div class="glow-orb-purple bottom-10 left-10"></div>
+
+    <!-- Header -->
+    <header class="relative z-10 max-w-7xl w-full mx-auto px-6 py-6 flex items-center justify-between">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('home')">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-neonOrange to-neonPurple flex items-center justify-center font-bold text-white text-xl shadow-lg">
+                G2
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl font-bold tracking-wider text-white">GUDOS <span class="text-neonOrange">- 2</span></span>
+                <span class="text-xs px-2.5 py-0.5 rounded-full bg-neonPurple/20 border border-neonPurple/50 text-neonPurple font-semibold uppercase tracking-wider">v2.0</span>
+            </div>
+        </div>
+
+        <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
+            <button onclick="showSection('home')" class="hover:text-neonOrange transition-colors">Home</button>
+            <button onclick="scrollToId('games-showcase')" class="hover:text-neonOrange transition-colors">Games</button>
+            <button onclick="scrollToId('scripts-showcase')" class="hover:text-neonOrange transition-colors">Scripts</button>
+            <button onclick="showSection('executor')" class="hover:text-neonOrange transition-colors">Executor</button>
+        </nav>
+
+        <button onclick="showSection('executor')" class="glow-btn-orange bg-gradient-to-r from-neonOrange to-orange-600 text-white font-bold px-5 py-2.5 rounded-xl text-sm flex items-center space-x-2">
+            <i class="fas fa-terminal"></i>
+            <span>Open Executor</span>
+        </button>
+    </header>
+
+    <!-- Home View -->
+    <main id="home-section" class="relative z-10 max-w-7xl mx-auto px-6 py-10 flex-grow">
+        
+        <div class="text-center max-w-4xl mx-auto mb-16">
+            <div class="inline-flex items-center space-x-2 px-4 py-2 rounded-full glass-card mb-6 border border-white/10">
+                <span class="w-2.5 h-2.5 rounded-full bg-neonGreen status-pulse"></span>
+                <span class="text-xs font-mono text-gray-300">RUNTIME STATUS: <span class="text-neonGreen font-bold">ONLINE</span></span>
+            </div>
+
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+                GUDOS <span class="text-transparent bg-clip-text bg-gradient-to-r from-neonOrange via-amber-400 to-neonPurple">EXECUTOR</span>
+            </h1>
+            
+            <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto font-light">
+                Direct Luau script hub and console environment. Open the executor immediately or run presets in one click.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button onclick="showSection('executor')" class="w-full sm:w-auto glow-btn-orange bg-neonOrange hover:bg-orange-600 text-white font-bold px-8 py-4 rounded-xl text-lg flex items-center justify-center space-x-3 transition-all">
+                    <span>Launch Executor</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <button onclick="scrollToId('scripts-showcase')" class="w-full sm:w-auto glass-card hover:bg-white/5 text-white font-bold px-8 py-4 rounded-xl text-lg flex items-center justify-center space-x-3 border border-white/10 transition-all">
+                    <i class="fas fa-code text-neonPurple text-xl"></i>
+                    <span>Browse Scripts</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Games Showcase -->
+        <section id="games-showcase" class="mb-16">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">Games <span class="text-neonOrange">Library</span></h2>
+                    <p class="text-sm text-gray-400">Experiences listed in the hub</p>
+                </div>
+                <span class="text-xs font-mono px-3 py-1 rounded-full bg-neonGreen/10 border border-neonGreen/30 text-neonGreen">3 GAMES</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-6 rounded-2xl border border-white/10 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-mono text-neonGreen">READY</span>
+                            <span class="text-xs font-mono text-gray-500">ID: 88569371746781</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Norfolk Naval Station</h3>
+                        <p class="text-xs text-gray-400 mb-6">Naval roleplay experience entry in the hub.</p>
+                    </div>
+                    <button onclick="openExecutorWithCode('print(\"Loaded Norfolk Naval Station preset\")')" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-neonOrange hover:text-white border border-white/10 text-sm font-bold transition-all">
+                        Open in Executor
+                    </button>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl border border-white/10 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-mono text-neonGreen">READY</span>
+                            <span class="text-xs font-mono text-gray-500">ID: 91619220706484</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">3D Sprunki RolePlay Anim Morphs</h3>
+                        <p class="text-xs text-gray-400 mb-6">Roleplay and animation morphs experience entry.</p>
+                    </div>
+                    <button onclick="openExecutorWithCode('print(\"Loaded 3D Sprunki RolePlay Anim Morphs preset\")')" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-neonPurple hover:text-white border border-white/10 text-sm font-bold transition-all">
+                        Open in Executor
+                    </button>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl border border-white/10 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-mono text-neonGreen">READY</span>
+                            <span class="text-xs font-mono text-gray-500">ID: 101566728071721</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Sprunki BTools V3</h3>
+                        <p class="text-xs text-gray-400 mb-6">Building tools sandbox experience entry.</p>
+                    </div>
+                    <button onclick="openExecutorWithCode('print(\"Loaded Sprunki BTools V3 preset\")')" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-neonCyan hover:text-darkBg border border-white/10 text-sm font-bold transition-all">
+                        Open in Executor
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scripts Showcase -->
+        <section id="scripts-showcase" class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">Script <span class="text-neonPurple">Presets</span></h2>
+                    <p class="text-sm text-gray-400">Click run to load and execute directly in the console</p>
+                </div>
+                <span class="text-xs font-mono px-3 py-1 rounded-full bg-neonPurple/10 border border-neonPurple/30 text-neonPurple">4 PRESETS</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="glass-card p-5 rounded-2xl border border-white/10 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-neonOrange/20 text-neonOrange">Admin</span>
+                        <h3 class="text-lg font-bold text-white mt-2 mb-1">Admin Commands</h3>
+                        <p class="text-xs text-gray-400 mb-4">Loads admin command preset into the editor.</p>
+                    </div>
+                    <button onclick="runPresetNow('require(4829104421).LoadAdmin(\"GUDOS_V2\")')" class="w-full py-2 rounded-lg bg-neonPurple/20 hover:bg-neonPurple text-white border border-neonPurple/40 text-xs font-bold transition-all">
+                        <i class="fas fa-play mr-1"></i> Run Script
+                    </button>
+                </div>
+
+                <div class="glass-card p-5 rounded-2xl border border-white/10 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-neonCyan/20 text-neonCyan">Info</span>
+                        <h3 class="text-lg font-bold text-white mt-2 mb-1">Server Info</h3>
+                        <p class="text-xs text-gray-400 mb-4">Prints player count and server diagnostic info.</p>
+                    </div>
+                    <button onclick="runPresetNow('print(\"[INFO] Players online:\", #game.Players:GetPlayers())')" class="w-full py-2 rounded-lg bg-neonPurple/20 hover:bg-neonPurple text-white border border-neonPurple/40 text-xs font-bold transition-all">
+                        <i class="fas fa-play mr-1"></i> Run Script
+                    </button>
+                </div>
+
+                <div class="glass-card p-5 rounded-2xl border border-white/10 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-neonGreen/20 text-neonGreen">Lighting</span>
+                        <h3 class="text-lg font-bold text-white mt-2 mb-1">Midnight Sky</h3>
+                        <p class="text-xs text-gray-400 mb-4">Sets lighting time to midnight in Luau preset.</p>
+                    </div>
+                    <button onclick="runPresetNow('game.Lighting.ClockTime = 0; print(\"[LIGHTING] ClockTime set to 0\")')" class="w-full py-2 rounded-lg bg-neonPurple/20 hover:bg-neonPurple text-white border border-neonPurple/40 text-xs font-bold transition-all">
+                        <i class="fas fa-play mr-1"></i> Run Script
+                    </button>
+                </div>
+
+                <div class="glass-card p-5 rounded-2xl border border-white/10 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-400">Build</span>
+                        <h3 class="text-lg font-bold text-white mt-2 mb-1">Spawn Part</h3>
+                        <p class="text-xs text-gray-400 mb-4">Creates an anchored part preset in Workspace.</p>
+                    </div>
+                    <button onclick="runPresetNow('local p = Instance.new(\"Part\", workspace); p.Anchored = true; print(\"[BUILD] Part spawned\")')" class="w-full py-2 rounded-lg bg-neonPurple/20 hover:bg-neonPurple text-white border border-neonPurple/40 text-xs font-bold transition-all">
+                        <i class="fas fa-play mr-1"></i> Run Script
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Direct Executor View -->
+    <main id="executor-section" class="view-hidden relative z-10 max-w-4xl w-full mx-auto px-6 py-10 flex-grow flex flex-col justify-center">
+        <div class="glass-card p-6 md:p-8 rounded-3xl w-full border border-neonPurple/40">
+            <div class="flex items-center justify-between pb-4 mb-5 border-b border-white/10">
+                <div class="flex items-center space-x-3">
+                    <div class="w-3 h-3 rounded-full bg-neonGreen status-pulse"></div>
+                    <div>
+                        <div class="text-sm font-bold text-white">GUDOS - 2 CONSOLE</div>
+                        <div class="text-xs font-mono text-neonGreen">READY</div>
+                    </div>
+                </div>
+                <button onclick="showSection('home')" class="text-xs bg-white/5 text-gray-300 border border-white/10 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all">
+                    Back to Home
+                </button>
+            </div>
+
+            <div class="space-y-3 mb-5">
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <label class="text-xs font-mono text-gray-400">SCRIPT INPUT</label>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="runPresetNow('require(4829104421).LoadAdmin(\"GUDOS_V2\")')" class="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-[11px] font-mono text-gray-300 hover:bg-white/10">Admin</button>
+                        <button onclick="runPresetNow('game.Lighting.ClockTime = 0')" class="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-[11px] font-mono text-gray-300 hover:bg-white/10">Midnight</button>
+                        <button onclick="clearScript()" class="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-[11px] font-mono text-gray-400 hover:text-white">Clear</button>
+                    </div>
+                </div>
+
+                <textarea id="script-input" rows="5" class="w-full bg-darkBg border border-white/10 rounded-xl p-4 text-xs font-mono text-neonGreen focus:outline-none focus:border-neonPurple" placeholder='print("Hello from GUDOS - 2")'></textarea>
+                
+                <div class="flex items-center justify-end space-x-3">
+                    <button onclick="clearLogs()" class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-mono text-gray-300 hover:bg-white/10">
+                        Clear Output
+                    </button>
+                    <button onclick="runScript()" class="glow-btn-purple bg-neonPurple text-white px-6 py-2.5 rounded-xl text-xs font-bold flex items-center space-x-2">
+                        <i class="fas fa-play"></i>
+                        <span>Execute</span>
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <div class="text-[11px] font-mono text-gray-500 mb-2">CONSOLE</div>
+                <div class="terminal-box rounded-xl p-4 text-xs font-mono text-gray-300 h-44 overflow-y-auto border border-white/10 space-y-1.5" id="terminal-logs">
+                    <p class="text-gray-500">[SYSTEM] Console ready.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 border-t border-white/5 py-6 mt-12 bg-darkBg/80">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500">
+            <p>&copy; 2026 GUDOS - 2</p>
+            <p class="mt-2 md:mt-0 font-mono">Luau Hub</p>
+        </div>
+    </footer>
+
+    <script>
+        function showSection(section) {
+            const home = document.getElementById('home-section');
+            const executor = document.getElementById('executor-section');
+
+            if (section === 'executor') {
+                home.classList.add('view-hidden');
+                executor.classList.remove('view-hidden');
+            } else {
+                executor.classList.add('view-hidden');
+                home.classList.remove('view-hidden');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function scrollToId(id) {
+            showSection('home');
+            setTimeout(() => {
+                document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+            }, 50);
+        }
+
+        function openExecutorWithCode(code) {
+            showSection('executor');
+            document.getElementById('script-input').value = code;
+        }
+
+        function runPresetNow(code) {
