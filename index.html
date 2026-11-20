@@ -363,3 +363,74 @@
         }
 
         function runPresetNow(code) {
+            showSection('executor');
+            document.getElementById('script-input').value = code;
+            runScript();
+        }
+
+        function appendLog(message, tone = 'gray') {
+            const logs = document.getElementById('terminal-logs');
+            const line = document.createElement('p');
+            const colors = {
+                gray: 'text-gray-300',
+                green: 'text-neonGreen',
+                cyan: 'text-neonCyan',
+                purple: 'text-neonPurple',
+                orange: 'text-neonOrange'
+            };
+            line.className = colors[tone] || colors.gray;
+            line.textContent = message;
+            logs.appendChild(line);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function runScript() {
+            const input = document.getElementById('script-input');
+            const code = input.value.trim();
+
+            if (!code) {
+                appendLog('[ERROR] Enter a script before executing.', 'orange');
+                input.focus();
+                return;
+            }
+
+            appendLog('[EXECUTE] Running submitted script...', 'purple');
+
+            if (code.includes('game.Lighting.ClockTime')) {
+                appendLog('[OK] Midnight lighting preset queued.', 'green');
+            } else if (code.includes('GetPlayers')) {
+                appendLog('[INFO] Server player count is not available in this browser demo.', 'cyan');
+            } else if (code.includes('LoadAdmin')) {
+                appendLog('[INFO] Admin module requires a Roblox executor to run.', 'cyan');
+            } else if (code.includes('Instance.new')) {
+                appendLog('[INFO] Workspace access requires a Roblox executor to run.', 'cyan');
+            } else if (code.includes('print(')) {
+                const match = code.match(/print\(["'](.*)["']\)/);
+                appendLog(match ? '[OUTPUT] ' + match[1] : '[OUTPUT] Print command received.', 'green');
+            } else {
+                appendLog('[INFO] Script loaded. Roblox APIs require a compatible external executor.', 'cyan');
+            }
+        }
+
+        function clearScript() {
+            document.getElementById('script-input').value = '';
+            document.getElementById('script-input').focus();
+        }
+
+        function clearLogs() {
+            document.getElementById('terminal-logs').innerHTML =
+                '<p class="text-gray-500">[SYSTEM] Output cleared.</p>';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('script-input');
+            input.addEventListener('keydown', (event) => {
+                if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                    event.preventDefault();
+                    runScript();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
